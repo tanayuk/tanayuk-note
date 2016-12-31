@@ -4,6 +4,7 @@ import pickle
 import sqlite3
 import os
 import numpy as np
+from update import update_model
 # ローカルディレクトリからHashingVectorizerをインポート
 from vectorizer import vect
 app = Flask(__name__)
@@ -34,7 +35,7 @@ class ReviewForm(Form):
 def index():
   form = ReviewForm(request.form)
   return render_template('reviewform.html',form=form)
-@app.route('/results', method=['POST'])
+@app.route('/results', methods=['POST'])
 def results():
   form = ReviewForm(request.form)
   if request.method == 'POST' and form.validate():
@@ -54,5 +55,6 @@ def feedback():
   train(review, y)
   sqlite_entry(db,review, y)
   return render_template('thanks.html')
-if __main__ == '__main__':
+if __name__ == '__main__':
+  clf = update_model(db_path=db, model=clf, batch_size=10000)
   app.run(debug=True)
